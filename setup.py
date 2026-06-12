@@ -15,11 +15,12 @@ setup(
     zip_safe=True,
     maintainer='daniel550',
     maintainer_email='19624107@mahasiswa.itb.ac.id',
-    description='TODO: Package description',
+    description='Visibility A*',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'planner_node = vis_astar.planner_node:main'
         ],
     },
 )
