@@ -1,4 +1,16 @@
+import numpy as np
 from collections import deque
+
+# Ubah jadi grid
+def to_grid(msg):
+    width = msg.info.width
+    height = msg.info.height
+    data = np.array(msg.data).reshape(height, width)
+
+    grid = np.zeros((height, width), dtype=int)
+    grid[data > 50] = 1
+
+    return grid.tolist()
 
 # membantu vis_astar (indikator aman atau tidak)
 def clear_map(grid):
