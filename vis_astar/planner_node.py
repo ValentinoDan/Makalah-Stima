@@ -1,7 +1,8 @@
 import rclpy
 from rclpy.node import Node
-from nav_msgs.msg import (OccupancyGrid, Path)
+from nav_msgs.msg import OccupancyGrid, Path
 from geometry_msgs.msg import PoseStamped
+from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 from vis_astar.visibility_astar import VisAStar
 from vis_astar.utils import clear_map, to_grid
 
@@ -11,7 +12,9 @@ class PlannerNode(Node):
         super().__init__("planner_node")
         self.planner = VisAStar(lambda_score=0.3)
         self.map_received = False
-        self.map_sub = (self.create_subscription(OccupancyGrid, "/map", self.callback, 10))
+        
+        map_qos = QoSProfile(depth=1, reliability=ReliabilityPolicy.RELIABLE, durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        self.map_sub = (self.create_subscription(OccupancyGrid, "/map", self.callback, map_qos))
         self.path_pub = (self.create_publisher(Path, "/vis_path", 10))
         self.get_logger().info("Planner started")
 
