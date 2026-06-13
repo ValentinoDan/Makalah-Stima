@@ -18,7 +18,7 @@ class PlannerNode(Node):
     """
     def __init__(self):
         super().__init__("planner_node")
-        self.planner = ClearanceAStar(lambda_score=0.5)
+        self.planner = ClearanceAStar(lambda_score=8.0, min_clearance=6)
 
         # map state
         self.grid = None

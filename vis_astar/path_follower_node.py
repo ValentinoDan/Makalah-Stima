@@ -13,8 +13,8 @@ class PathFollowerNode(Node):
         super().__init__("path_follower_node")
 
         # param
-        self.lookahead = 0.5 # m
-        self.linear_speed = 0.3 # m/s
+        self.lookahead = 0.35 # m
+        self.linear_speed = 0.15 # m/s
         self.goal_tol = 0.35 # m
         self.angle_tol = 0.1 # rad
         self.max_angular = 1.2 # rad/s
@@ -86,8 +86,11 @@ class PathFollowerNode(Node):
         heading_err = self._normalize_angle(angle_to_target - self.robot_yaw)
         dist_to_wp = math.hypot(target_x - self.robot_x, target_y - self.robot_y)
 
-        linear = self.linear_speed * (1.0 - 0.6 * abs(heading_err) / math.pi)
-        linear = max(0.05, linear)
+        if abs(heading_err) > 0.4: 
+            linear = 0.0
+        else:
+            linear = self.linear_speed * (1.0 - 0.6 * abs(heading_err) / math.pi)
+            linear = max(0.05, linear)
 
         angular = max(-self.max_angular, min(self.max_angular, 1.8 * heading_err))
 
