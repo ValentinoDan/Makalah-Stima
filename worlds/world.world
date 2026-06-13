@@ -1,0 +1,113 @@
+<?xml version="1.0" ?>
+<sdf version="1.7">
+<world name="obs_world">
+
+  <include><uri>model://ground_plane</uri></include>
+  <include><uri>model://sun</uri></include>
+
+  <!-- obs1: cx=0, cy=4, sx=2, sy=4 -->
+  <model name="obs1">
+    <static>true</static>
+    <pose>0 4 0.5 0 0 0</pose>
+    <link name="link">
+      <collision name="collision"><geometry><box><size>2 4 1</size></box></geometry></collision>
+      <visual name="visual">
+        <geometry><box><size>2 4 1</size></box></geometry>
+        <material><ambient>0.8 0.2 0.2 1</ambient><diffuse>0.8 0.2 0.2 1</diffuse></material>
+      </visual>
+    </link>
+  </model>
+
+  <!-- obs2: cx=5, cy=-2, sx=2, sy=4 -->
+  <model name="obs2">
+    <static>true</static>
+    <pose>5 -2 0.5 0 0 0</pose>
+    <link name="link">
+      <collision name="collision"><geometry><box><size>2 4 1</size></box></geometry></collision>
+      <visual name="visual">
+        <geometry><box><size>2 4 1</size></box></geometry>
+        <material><ambient>0.8 0.4 0.1 1</ambient><diffuse>0.8 0.4 0.1 1</diffuse></material>
+      </visual>
+    </link>
+  </model>
+
+  <!-- obs3: cx=-4, cy=-5, sx=3, sy=3 -->
+  <model name="obs3">
+    <static>true</static>
+    <pose>-4 -5 0.5 0 0 0</pose>
+    <link name="link">
+      <collision name="collision"><geometry><box><size>3 3 1</size></box></geometry></collision>
+      <visual name="visual">
+        <geometry><box><size>3 3 1</size></box></geometry>
+        <material><ambient>0.2 0.6 0.2 1</ambient><diffuse>0.2 0.6 0.2 1</diffuse></material>
+      </visual>
+    </link>
+  </model>
+
+  <!-- obs4: cx=-3, cy=2, sx=1.5, sy=5 -->
+  <model name="obs4">
+    <static>true</static>
+    <pose>-3 2 0.5 0 0 0</pose>
+    <link name="link">
+      <collision name="collision"><geometry><box><size>1.5 5 1</size></box></geometry></collision>
+      <visual name="visual">
+        <geometry><box><size>1.5 5 1</size></box></geometry>
+        <material><ambient>0.5 0.2 0.8 1</ambient><diffuse>0.5 0.2 0.8 1</diffuse></material>
+      </visual>
+    </link>
+  </model>
+
+  <!-- obs5: cx=3, cy=6, sx=4, sy=1.5 -->
+  <model name="obs5">
+    <static>true</static>
+    <pose>3 6 0.5 0 0 0</pose>
+    <link name="link">
+      <collision name="collision"><geometry><box><size>4 1.5 1</size></box></geometry></collision>
+      <visual name="visual">
+        <geometry><box><size>4 1.5 1</size></box></geometry>
+        <material><ambient>0.1 0.5 0.8 1</ambient><diffuse>0.1 0.5 0.8 1</diffuse></material>
+      </visual>
+    </link>
+  </model>
+
+  <!-- obs6: cx=-7, cy=-1, sx=2, sy=2 -->
+  <model name="obs6">
+    <static>true</static>
+    <pose>-7 -1 0.5 0 0 0</pose>
+    <link name="link">
+      <collision name="collision"><geometry><box><size>2 2 1</size></box></geometry></collision>
+      <visual name="visual">
+        <geometry><box><size>2 2 1</size></box></geometry>
+        <material><ambient>0.9 0.7 0.1 1</ambient><diffuse>0.9 0.7 0.1 1</diffuse></material>
+      </visual>
+    </link>
+  </model>
+
+  <!-- obs7: cx=7, cy=3, sx=1.5, sy=3 -->
+  <model name="obs7">
+    <static>true</static>
+    <pose>7 3 0.5 0 0 0</pose>
+    <link name="link">
+      <collision name="collision"><geometry><box><size>1.5 3 1</size></box></geometry></collision>
+      <visual name="visual">
+        <geometry><box><size>1.5 3 1</size></box></geometry>
+        <material><ambient>0.3 0.8 0.5 1</ambient><diffuse>0.3 0.8 0.5 1</diffuse></material>
+      </visual>
+    </link>
+  </model>
+
+  <!-- obs8: cx=2, cy=-6, sx=2.5, sy=1.5 -->
+  <model name="obs8">
+    <static>true</static>
+    <pose>2 -6 0.5 0 0 0</pose>
+    <link name="link">
+      <collision name="collision"><geometry><box><size>2.5 1.5 1</size></box></geometry></collision>
+      <visual name="visual">
+        <geometry><box><size>2.5 1.5 1</size></box></geometry>
+        <material><ambient>0.8 0.3 0.6 1</ambient><diffuse>0.8 0.3 0.6 1</diffuse></material>
+      </visual>
+    </link>
+  </model>
+
+</world>
+</sdf>
