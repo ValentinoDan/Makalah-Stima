@@ -10,13 +10,12 @@ from vis_astar.utils import clear_map, to_grid
 class PlannerNode(Node):
     """
     Subscribes:
-      /map (nav_msgs/OccupancyGrid)                  
-      /initialpose (geometry_msgs/PoseWithCovarianceStamped)  
-      /goal_pose (geometry_msgs/PoseStamped)               
+    - /map (nav_msgs/OccupancyGrid)                  
+    - /initialpose (geometry_msgs/PoseWithCovarianceStamped)  
+    - /goal_pose (geometry_msgs/PoseStamped)               
     Publishes:
-      /vis_path (nav_msgs/Path)
+    - /vis_path (nav_msgs/Path)
     """
-
     def __init__(self):
         super().__init__("planner_node")
         self.planner = ClearanceAStar(lambda_score=0.5)
