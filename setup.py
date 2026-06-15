@@ -42,6 +42,7 @@ setup(
             'planner_node = vis_astar.planner_node:main',
             'path_follower_node = vis_astar.path_follower_node:main',
             'odom_node = vis_astar.odom_node:main',
+            'joint_state_node = vis_astar.joint_state_node:main',
             'evaluate = vis_astar.evaluate:run_benchmark',
         ],
     },
