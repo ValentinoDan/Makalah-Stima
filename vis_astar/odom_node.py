@@ -80,7 +80,6 @@ class OdomNode(Node):
         self.yaw = math.atan2(siny_cosp, cosy_cosp)
         self.get_logger().info(f'Pose reset: ({self.x:.2f}, {self.y:.2f}, yaw={self.yaw:.3f} rad)')
 
-    # ROBOT_RADIUS harus > INFLATE_M di generate_map (0.25m) agar pasti terdeteksi
     ROBOT_RADIUS = 0.26  # m
 
     def _check_cell(self, wx: float, wy: float) -> bool:
@@ -95,7 +94,7 @@ class OdomNode(Node):
             return False
         if self._check_cell(wx, wy):
             return True
-        # Ring sampling: inner (r/2) dan outer (r) - 32 titik tiap ring
+        
         for r in (self.ROBOT_RADIUS * 0.5, self.ROBOT_RADIUS):
             step = 2.0 * math.pi / 32
             for i in range(32):
