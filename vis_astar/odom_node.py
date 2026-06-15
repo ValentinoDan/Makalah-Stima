@@ -17,13 +17,15 @@ def euler_to_quaternion(yaw: float) -> Quaternion:
 
 class OdomNode(Node):
     def __init__(self):
-        super().__init__('fake_odom_node')
+        super().__init__('odom_node')
 
-        self.declare_parameter('publish_rate', 20.0) # Hz
-        self.declare_parameter('initial_x',   0.0) # m
-        self.declare_parameter('initial_y',   0.0) # m
-        self.declare_parameter('initial_yaw', 0.0) # rad
+        self.declare_parameter('collision_enabled', True)
+        self.declare_parameter('publish_rate', 20.0)
+        self.declare_parameter('initial_x', 0.0)
+        self.declare_parameter('initial_y', 0.0)
+        self.declare_parameter('initial_yaw', 0.0)
 
+        self.collision_enabled = self.get_parameter('collision_enabled').value
         rate = self.get_parameter('publish_rate').value
         self.x = self.get_parameter('initial_x').value
         self.y = self.get_parameter('initial_y').value
@@ -48,14 +50,11 @@ class OdomNode(Node):
         self.pose_sub = self.create_subscription(PoseWithCovarianceStamped, '/initialpose', self._initialpose_callback, 10)
 
         self.timer = self.create_timer(self.dt, self._update)
-        self.get_logger().info(
-            f'OdomNode started | rate={rate:.1f} Hz | '
-            f'init=({self.x:.2f}, {self.y:.2f}, yaw={self.yaw:.3f} rad)'
-        )
-        self.get_logger().info(
-            'Collision detection active — robot stops at obstacle boundaries.'
-        )
-
+        self.get_logger().info(f'OdomNode started | rate={rate:.1f} Hz | init=({self.x:.2f}, {self.y:.2f}, yaw={self.yaw:.3f} rad)')
+        if self.collision_enabled:
+            self.get_logger().info('Collision detection enabled — robot stops at obstacle boundaries')
+        else:
+            self.get_logger().info('Collision detection disabled — robot ignores obstacles')
 
     def _map_callback(self, msg: OccupancyGrid):
         self.map_data = list(msg.data)
@@ -64,32 +63,25 @@ class OdomNode(Node):
         self.map_resolution = msg.info.resolution
         self.map_origin_x = msg.info.origin.position.x
         self.map_origin_y = msg.info.origin.position.y
-        self.get_logger().info(
-            f'Map received: {self.map_width}x{self.map_height} '
-            f'@ {self.map_resolution:.3f} m/px — collision detection ready.'
-        )
+        self.get_logger().info(f'Map received: {self.map_width}x{self.map_height} @ {self.map_resolution:.3f} m/px — collision detection ready.')
 
     def _cmd_vel_callback(self, msg: Twist):
         self.vx = msg.linear.x
         self.wz = msg.angular.z
 
     def _initialpose_callback(self, msg: PoseWithCovarianceStamped):
-        """Reset posisi robot saat klik '2D Pose Estimate'"""
         self.x  = msg.pose.pose.position.x
         self.y  = msg.pose.pose.position.y
         self.vx = 0.0
         self.wz = 0.0
-
         q = msg.pose.pose.orientation
         siny_cosp = 2.0 * (q.w * q.z + q.x * q.y)
         cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z)
         self.yaw = math.atan2(siny_cosp, cosy_cosp)
+        self.get_logger().info(f'Pose reset: ({self.x:.2f}, {self.y:.2f}, yaw={self.yaw:.3f} rad)')
 
-        self.get_logger().info(
-            f'Pose reset: ({self.x:.2f}, {self.y:.2f}, yaw={self.yaw:.3f} rad)'
-        )
-
-    ROBOT_RADIUS = 0.20
+    # ROBOT_RADIUS harus > INFLATE_M di generate_map (0.25m) agar pasti terdeteksi
+    ROBOT_RADIUS = 0.26  # m
 
     def _check_cell(self, wx: float, wy: float) -> bool:
         gx = int((wx - self.map_origin_x) / self.map_resolution)
@@ -101,37 +93,35 @@ class OdomNode(Node):
     def _is_obstacle(self, wx: float, wy: float) -> bool:
         if self.map_data is None:
             return False
-
-        # Titik tengah
         if self._check_cell(wx, wy):
             return True
-
-        # 16 titik di sekeliling radius robot
-        r = self.ROBOT_RADIUS
-        for i in range(16):
-            angle = i * (2 * math.pi / 16)
-            px = wx + r * math.cos(angle)
-            py = wy + r * math.sin(angle)
-            if self._check_cell(px, py):
-                return True
-
+        # Ring sampling: inner (r/2) dan outer (r) - 32 titik tiap ring
+        for r in (self.ROBOT_RADIUS * 0.5, self.ROBOT_RADIUS):
+            step = 2.0 * math.pi / 32
+            for i in range(32):
+                angle = i * step
+                px = wx + r * math.cos(angle)
+                py = wy + r * math.sin(angle)
+                if self._check_cell(px, py):
+                    return True
         return False
 
     def _update(self) -> None:
         now = self.get_clock().now()
-
         delta_yaw = self.wz * self.dt
         mid_yaw = self.yaw + delta_yaw / 2.0
         new_x = self.x + self.vx * math.cos(mid_yaw) * self.dt
         new_y = self.y + self.vx * math.sin(mid_yaw) * self.dt
         new_yaw = math.atan2(math.sin(self.yaw + delta_yaw), math.cos(self.yaw + delta_yaw))
 
-        if self._is_obstacle(new_x, new_y):
-            # stop translasi, tapi ttp bisa rotasi
-            self.vx = 0.0
-            new_x = self.x
-            new_y = self.y
-        
+        # Apply collision detection only when enabled
+        if self.collision_enabled:
+            if self._is_obstacle(new_x, new_y):
+                self.get_logger().debug('Collision detected – stopping robot')
+                self.vx = 0.0
+                new_x = self.x
+                new_y = self.y
+
         self.x = new_x
         self.y = new_y
         self.yaw = new_yaw

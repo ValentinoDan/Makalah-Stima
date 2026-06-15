@@ -1,7 +1,7 @@
 import math
 import rclpy
 from rclpy.node import Node
-from nav_msgs.msg import OccupancyGrid, Path
+from nav_msgs.msg import OccupancyGrid, Path, Odometry
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
 from vis_astar.clearance_astar import ClearanceAStar
@@ -18,7 +18,7 @@ class PlannerNode(Node):
     """
     def __init__(self):
         super().__init__("planner_node")
-        self.planner = ClearanceAStar(lambda_score=8.0, min_clearance=6)
+        self.planner = ClearanceAStar(lambda_score=8.0, min_clearance=10)
 
         # map state
         self.grid = None
@@ -33,6 +33,7 @@ class PlannerNode(Node):
         self.map_sub = self.create_subscription(OccupancyGrid, "/map", self.map_cb, map_qos)
         self.initial_pose_sub = self.create_subscription(PoseWithCovarianceStamped, "/initialpose", self.initialpose_cb, 10)
         self.goal_sub = self.create_subscription(PoseStamped, "/goal_pose", self.goal_cb, 10)
+        self.odom_sub = self.create_subscription(Odometry, "/odom", self.odom_cb, 10)
         self.path_pub = self.create_publisher(Path, "/vis_path", 10)
         self.get_logger().info("PlannerNode started — set /initialpose and /goal_pose in RViz")
 
@@ -62,6 +63,11 @@ class PlannerNode(Node):
         self.goal_world = (x, y)
         self.get_logger().info(f"Goal set: world ({x:.2f}, {y:.2f})")
         self._try_plan()
+
+    def odom_cb(self, msg: Odometry):
+        x = msg.pose.pose.position.x
+        y = msg.pose.pose.position.y
+        self.start_world = (x, y)
 
     def _try_plan(self):
         if self.grid is None:
@@ -123,8 +129,8 @@ class PlannerNode(Node):
         for gx, gy in path:
             pose = PoseStamped()
             pose.header = msg.header
-            pose.pose.position.x = gx * res + origin_x
-            pose.pose.position.y = gy * res + origin_y
+            pose.pose.position.x = (gx + 0.5) * res + origin_x
+            pose.pose.position.y = (gy + 0.5) * res + origin_y
             pose.pose.position.z = 0.0
             pose.pose.orientation.w = 1.0
             msg.poses.append(pose)

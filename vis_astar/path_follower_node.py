@@ -13,11 +13,11 @@ class PathFollowerNode(Node):
         super().__init__("path_follower_node")
 
         # param
-        self.lookahead = 0.35 # m
-        self.linear_speed = 0.15 # m/s
+        self.lookahead = 0.6 # m
+        self.linear_speed = 0.6 # m/s
         self.goal_tol = 0.35 # m
         self.angle_tol = 0.1 # rad
-        self.max_angular = 1.2 # rad/s
+        self.max_angular = 2.0 # rad/s
 
         # state
         self.path = []            
@@ -66,9 +66,10 @@ class PathFollowerNode(Node):
         gx, gy = self.path[-1]
         dist_goal = math.hypot(gx - self.robot_x, gy - self.robot_y)
         if dist_goal < self.goal_tol:
-            self.get_logger().info("Goal reached! Stopping.")
+            self.get_logger().info("Goal reached! Stopping!")
             self.publish_stop()
-            self.active = False
+            self.path = []
+            self.wp_idx = 0
             return
 
         while self.wp_idx < len(self.path) - 1:
