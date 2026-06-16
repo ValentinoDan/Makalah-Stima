@@ -101,7 +101,7 @@ class PlannerNode(Node):
         self._publish_path(path)
 
     def _world_to_grid(self, world_pos):
-        """Convert world (m) -> grid (pixel) coordinates."""
+        """Convert world (m) -> grid (pixel) coordinates"""
         wx, wy = world_pos
         origin_x = self.map_info.origin.position.x
         origin_y = self.map_info.origin.position.y
@@ -117,7 +117,7 @@ class PlannerNode(Node):
         return 0 <= gx < w and 0 <= gy < h
 
     def _publish_path(self, path):
-        """Convert grid path -> ROS Path and publish."""
+        """Convert grid path -> ROS Path and publish"""
         origin_x = self.map_info.origin.position.x
         origin_y = self.map_info.origin.position.y
         res = self.map_info.resolution
