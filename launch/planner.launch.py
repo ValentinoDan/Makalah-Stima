@@ -6,13 +6,12 @@ from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
-
 def generate_launch_description():
     pkg = get_package_share_directory("vis_astar")
 
     world_file = os.path.join(pkg, "worlds", "world.world")
-    urdf_file = os.path.join(pkg, "urdf",   "robot.urdf")
-    map_file = os.path.join(pkg, "maps",   "map.yaml")
+    urdf_file = os.path.join(pkg, "urdf", "robot.urdf")
+    map_file = os.path.join(pkg, "maps", "map.yaml")
     rviz_file = os.path.join(pkg, "config", "vis_astar.rviz")
 
     with open(urdf_file, "r") as f:
@@ -41,9 +40,17 @@ def generate_launch_description():
             package="robot_state_publisher",
             executable="robot_state_publisher",
             output="screen",
-            parameters=[{"robot_description": robot_description, "use_sim_time": True}],
+            parameters=[{"robot_description": robot_description, "use_sim_time": False}],
         ),
 
+        Node(
+            package="vis_astar",
+            executable="joint_state_node",
+            name="joint_state_node",
+            output="screen",
+            parameters=[{"use_sim_time": False}],
+        ),
+        
         # Node(
         #     package="gazebo_ros",
         #     executable="spawn_entity.py",
@@ -65,7 +72,7 @@ def generate_launch_description():
             parameters=[{
                 "yaml_filename": map_file,
                 "frame_id": "map",
-                "use_sim_time": True,
+                "use_sim_time": False,
             }],
         ),
 
@@ -77,7 +84,7 @@ def generate_launch_description():
             parameters=[{
                 "autostart": True,
                 "node_names": ["map_server"],
-                "use_sim_time": True,
+                "use_sim_time": False,
             }],
         ),
 
@@ -94,7 +101,7 @@ def generate_launch_description():
             executable="planner_node",
             name="planner_node",
             output="screen",
-            parameters=[{"use_sim_time": True}],
+            parameters=[{"use_sim_time": False}],
         ),
 
         Node(
@@ -102,7 +109,7 @@ def generate_launch_description():
             executable="path_follower_node",
             name="path_follower_node",
             output="screen",
-            parameters=[{"use_sim_time": True}],
+            parameters=[{"use_sim_time": False}],
         ),
 
         Node(
@@ -114,7 +121,17 @@ def generate_launch_description():
                 'initial_x':    0.0,
                 'initial_y':    0.0,
                 'initial_yaw':  0.0,
+                'use_sim_time': False,
+                'collision_enabled': True,
             }],
+        ),
+        # Static transform base_footprint -> base_link (identity)
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            name='base_tf',
+            arguments=['0', '0', '0', '0', '0', '0', 'base_footprint', 'base_link'],
+            output='screen',
         ),
 
         Node(
@@ -124,6 +141,6 @@ def generate_launch_description():
             arguments=["-d", rviz_file],
             output="screen",
             condition=IfCondition(use_rviz),
-            parameters=[{"use_sim_time": True}],
+            parameters=[{"use_sim_time": False}],
         ),
     ])
