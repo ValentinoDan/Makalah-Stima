@@ -1,17 +1,15 @@
 # Clearance-Aware A\* Path Planner (ROS 2)
-Package ROS 2 untuk perencanaan jalur (*path planning*) robot menggunakan algoritma **Clearance-Aware A\*** yang memprioritaskan jalur aman dengan mempertimbangkan jarak terhadap rintangan (obstacle clearance). Sistem berjalan **tanpa Gazebo** menggunakan fake odometry berbasis collision detection pada peta 2D.
 ---
 ## Daftar Isi
 - [Gambaran Umum](#gambaran-umum)
 - [Arsitektur Sistem](#arsitektur-sistem)
 - [Struktur Direktori](#struktur-direktori)
 - [Dependensi](#dependensi)
-- [Cara Build](#cara-build)
+- [Prasyarat & Setup Workspace](#prasyarat-&-setup-Workspace)
 - [Cara Menjalankan](#cara-menjalankan)
 - [Cara Menggunakan (di RViz)](#cara-menggunakan-di-rviz)
 - [Konfigurasi Parameter](#konfigurasi-parameter)
-- [Regenerasi Peta](#regenerasi-peta)
-- [Benchmark Algoritma](#benchmark-algoritma)
+- [Analisis Perbandingan](#analisis-perbandingan)
 - [Topik ROS 2](#topik-ros-2)
 ---
 ## Gambaran Umum
