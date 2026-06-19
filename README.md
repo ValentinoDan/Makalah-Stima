@@ -5,7 +5,7 @@
 - [Arsitektur Sistem](#arsitektur-sistem)
 - [Struktur Direktori](#struktur-direktori)
 - [Dependensi](#dependensi)
-- [Prasyarat & Setup Workspace](#prasyarat-&-setup-Workspace)
+- [Prasyarat & Setup Workspace](#prasyarat-&-setup-workspace)
 - [Cara Menjalankan](#cara-menjalankan)
 - [Cara Menggunakan (di RViz)](#cara-menggunakan-di-rviz)
 - [Konfigurasi Parameter](#konfigurasi-parameter)
